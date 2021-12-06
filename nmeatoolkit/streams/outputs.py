@@ -33,7 +33,7 @@ class Output:
         raise NotImplementedError()
 
 
-class FileOutput(Output):
+class OutputFile(Output):
     def __init__(self, filepath = '--'):
         self.filepath = filepath
         if self.filepath == '--':

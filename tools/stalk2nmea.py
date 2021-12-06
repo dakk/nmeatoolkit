@@ -23,12 +23,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
-from nmeatoolkit.args import getDefaultParser
+from nmeatoolkit.args import getDefaultParser, processArguments
 
 def main():
     parser = getDefaultParser()
     args = parser.parse_args()
-    print(args)
+
+    args.pipes = 'seatalk' + ('' if args.pipes == None else ',' + args.pipes)
+
+    pipeline = processArguments(args)
+    pipeline.run()
 
 
 

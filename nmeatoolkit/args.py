@@ -25,6 +25,16 @@ SOFTWARE.
 '''
 import argparse
 
+from nmeatoolkit.pipeline import Pipeline
+
+from .streams.inputs import InputFile
+from .streams.outputs import OutputFile
+from .translators.tostring import ToStringTranslator
+from .translators.gpx import GPXTranslator
+from .translators.polar import PolarTranslator
+from .pipes.seatalk import SeatalkPipe
+from .pipes.truewind import TrueWindPipe
+
 def getDefaultParser():
     parser = argparse.ArgumentParser()
 
@@ -65,3 +75,49 @@ def getDefaultParser():
     )
 
     return parser
+
+def processArguments(args):
+    input = None 
+    output = None 
+    translator = None
+    pipes = []
+
+    if args.input == '--' or args.input == None:
+        input = InputFile()
+    elif args.input.startswith('tcp://'):
+        raise Exception('Not implemented')
+    elif args.input.startswith('udp://'):
+        raise Exception('Not implemented')
+    else:
+        input = InputFile(args.input)
+
+    
+    if args.output == '--' or args.output == None:
+        output = OutputFile()
+    elif args.output.startswith('tcp://'):
+        raise Exception('Not implemented')
+    elif args.output.startswith('udp://'):
+        raise Exception('Not implemented')
+    else:
+        output = OutputFile(args.output)
+
+
+    if args.format == 'nmea':
+        translator = ToStringTranslator()
+    elif args.format == 'pol':
+        translator = PolarTranslator()
+    elif args.format == 'gpx':
+        translator = GPXTranslator()
+
+    for p in args.pipes.split(','):
+        pargs = p.split('[')
+        ppipe = pargs[0]
+        if len(pargs) == 2:
+            pargs = pargs[2].split(']')
+
+        if ppipe == 'seatalk':
+            pipes.append(SeatalkPipe())
+        elif ppipe == 'truewind':
+            pipes.append(TrueWindPipe())
+
+    return Pipeline(input, output, translator, pipes)

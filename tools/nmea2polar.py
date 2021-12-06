@@ -23,33 +23,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
-from .translators.translator import FileTranslator, StreamTranslator
+from nmeatoolkit.args import getDefaultParser, processArguments
 
-class Pipeline:
-    def __init__(self, input, output, translator, pipes):
-        self.input = input
-        self.output = output
-        self.translator = translator
-        self.pipes = pipes
+def main():
+    parser = getDefaultParser()
+    args = parser.parse_args()
 
-    def run(self):
-        while not self.input.end():
-            s = self.input.readSentence()
+    args.pipes = 'truewind' + ('' if args.pipes == None else ',' + args.pipes)
+    args.format = 'polar'
 
-            if s == None: 
-                continue
+    pipeline = processArguments(args)
+    pipeline.run()
 
-            spiped = [s]
-            for pipe in self.pipes:
-                spiped = pipe.bulkTransform(spiped)
-            
-            for x in spiped:
-                f = self.translator.feed(x)
-                if isinstance(self.translator, StreamTranslator) and f:
-                    self.output.write(f)
-                    
-        if isinstance(self.translator, FileTranslator):
-            self.output.write(self.translator.result())
 
-        self.input.close()
-        self.output.close()
+
+if __name__ == "__main__":
+    main()

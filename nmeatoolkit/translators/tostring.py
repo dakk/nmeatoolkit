@@ -32,4 +32,4 @@ class ToStringTranslator(StreamTranslator):
         pass 
 
     def feed(self, sentence: pynmea2.NMEASentence) -> str:
-        return str(sentence)
+        return str(sentence)+'\n'

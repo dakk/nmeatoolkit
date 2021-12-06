@@ -44,16 +44,18 @@ class InputFile(Input):
             self.file = sys.stdin
         else:
             self.file = open(filepath, 'r')
+        self.lastLine = 'NMEA'
 
     def readSentence(self) -> pynmea2.NMEASentence:
-        l = self.file.readline()
+        self.lastLine = self.file.readline()
+        
         try:
-            return pynmea2.parse(l)
+            return pynmea2.parse(self.lastLine.replace('\n', ''))
         except pynmea2.nmea.ParseError:
             return None
 
     def end(self):
-        return self.file.iseof()
+        return self.lastLine == ''
         
     def close(self):
         self.file.close()

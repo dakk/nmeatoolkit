@@ -43,6 +43,8 @@ setuptools.setup(
         "console_scripts": [
             "stalk2nmea = tools.stalk2nmea:main",
             "nmea2gpx = tools.nmea2gpx:main",
+            "nmea2polar = tools.nmea2polar:main",
+            "nmeatk = tools.nmeatk:main",
         ]
     },
     classifiers=[
