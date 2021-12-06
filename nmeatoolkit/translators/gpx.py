@@ -32,8 +32,11 @@ class GPXTranslator(FileTranslator):
         self.hdg = None
         self.twa = None
         self.tws = None
+        self.awa = None
+        self.aws = None
         self.watertemp = None
         self.depth = None
+        self.gpx = ''
 
     def _gpx_header(self):
         gpx = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -52,7 +55,7 @@ class GPXTranslator(FileTranslator):
         return gpx
 
     def feed(self, s: pynmea2.NMEASentence) -> None:
-        if not s.isValid():
+        if not s:
             return
 
         # if s is HDG
@@ -67,9 +70,12 @@ class GPXTranslator(FileTranslator):
 
         # if s contains wind information, store on variables twa and tws
         if s.sentence_type == 'MWV':
-            # TODO: check if this is apparent or real wind, save both
-            self.twa = s.wind_angle
-            self.tws = s.wind_speed
+            if s.reference == 'R':
+                self.awa = s.wind_angle
+                self.aws = s.wind_speed
+            elif s.reference == 'T':
+                self.twa = s.wind_angle
+                self.tws = s.wind_speed
         if s.sentence_type == 'MWD':
             self.twa = s.direction_true
             self.tws = s.wind_speed_knots
@@ -77,24 +83,28 @@ class GPXTranslator(FileTranslator):
 
         # if s contains coordinates
         if isinstance(s, pynmea2.types.LatLonFix):
-            gpx = '<trkpt lat="' + s.latitude + '" lon="' + s.longitude + '">\n'
-            gpx += '<ele>' + s.altitude + '</ele>\n'
-            gpx += '<time>' + s.timestamp + '</time>\n'
+            gpx = '<trkpt lat="%s" lon="%s">\n' % (s.latitude, s.longitude)
+            # gpx += '<ele>%s</ele>\n' % (s.altitude)
+            gpx += '<time>%s</time>\n' % (s.timestamp)
 
             # Add extensions
             gpx += '<extensions>\n'
             gpx += '<gpxx:TrackPointExtension>\n'
 
             if self.hdg != None:
-                gpx += '<gpxx:heading>' + self.hdg + '</gpxx:heading>\n'
+                gpx += '<gpxx:heading>%s</gpxx:heading>\n' % (self.hdg)
             if self.twa != None:
-                gpx += '<gpxx:twa>' + self.twa + '</gpxx:twa>\n'
+                gpx += '<gpxx:twa>%s</gpxx:twa>\n' % (self.twa)
             if self.tws != None:
-                gpx += '<gpxx:tws>' + self.tws + '</gpxx:tws>\n'
+                gpx += '<gpxx:tws>%s</gpxx:tws>\n' % (self.tws)
+            if self.awa != None:
+                gpx += '<gpxx:awa>%s</gpxx:awa>\n' % (self.awa)
+            if self.aws != None:
+                gpx += '<gpxx:aws>%s</gpxx:aws>\n' % (self.aws)
             if self.watertemp != None:
-                gpx += '<gpxx:watertemp>' + self.watertemp + '</gpxx:watertemp>\n'
+                gpx += '<gpxx:watertemp>%s</gpxx:watertemp>\n' % (self.watertemp)
             if self.depth != None:
-                gpx += '<gpxx:depth>' + self.depth + '</gpxx:depth>\n'
+                gpx += '<gpxx:depth>%s</gpxx:depth>\n' % (self.depth)
 
             gpx += '</gpxx:TrackPointExtension>\n'
             gpx += '</extensions>\n'

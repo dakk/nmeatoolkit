@@ -25,12 +25,43 @@ SOFTWARE.
 '''
 import pynmea2
 from .pipe import Pipe
+import math
+from decimal import Decimal, getcontext
 
 
 class TrueWindPipe(Pipe):
-	""" Append new sentences for twa and tws if only apparent data is available """
-	def __init__(self):
-		pass
+    """ Append new sentences for twa and tws if only apparent data is available """
 
-	def transform(self, sentence: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
-		return [sentence]
+    def __init__(self):
+        self.speed = None
+
+    def transform(self, s: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
+        sl = [s]
+
+        if s.sentence_type == 'MWV':
+            # R stands to relative to bow?
+            if s.reference == 'R':
+                awa = float(s.wind_angle)
+                aws = float(s.wind_speed)
+
+                # Calculate twa and tws
+                # https://en.wikipedia.org/wiki/Apparent_wind#Calculating_apparent_velocity_and_angle
+                if self.speed != None and aws != 0:                    
+                    try:
+                        awar = math.radians(awa)
+                        tws = math.sqrt(aws**2 + self.speed**2 - 2 *
+                                        awa*self.speed*math.cos(awar))
+                        if awa > 180:
+                            twa = 360 - math.degrees(math.acos((aws * math.cos(awar) - self.speed) / tws))
+                        else:
+                            twa = math.degrees(math.acos((aws * math.cos(awar) - self.speed) / tws))
+                    
+                        sl.append(pynmea2.MWV('II', 'MWV', ("{:.2f}".format(twa), 'T', "{:.2f}".format(tws), 'k', 'A')))
+                    except:
+                        pass
+
+        elif s.sentence_type == 'VTG':
+            if s.spd_over_grnd_kts != None:
+                self.speed = float(s.spd_over_grnd_kts)
+
+        return sl

@@ -12,7 +12,6 @@ A comprensive software collection for nmea manipulation; it includes a library a
 ## Tools
 
 - nmea2gpx: converts nmea sentences to gpx (with extensions)
-- nmea_addtw: add true wind direction / speed even if it is not available
 - stalk2nmea: converts $STALK to native nmea sentences
 - nmea2polar: extracts polars from nmea
 - nmeatk: the raw toolkit 

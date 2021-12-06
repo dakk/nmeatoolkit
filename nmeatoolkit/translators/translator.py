@@ -26,8 +26,7 @@ SOFTWARE.
 import pynmea2 
 
 class Translator:
-    def __init__(self):
-        raise NotImplementedError()
+    pass 
 
 
 class StreamTranslator(Translator):
