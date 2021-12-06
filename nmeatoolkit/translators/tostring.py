@@ -23,14 +23,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
-from nmeatoolkit.args import getDefaultParser
+import pynmea2
 
-def main():
-    parser = getDefaultParser()
-    args = parser.parse_args()
-    print(args)
+from .translator import StreamTranslator 
 
+class ToStringTranslator(StreamTranslator):
+    def __init__(self):
+        pass 
 
-
-if __name__ == "__main__":
-    main()
+    def feed(self, sentence: pynmea2.NMEASentence) -> str:
+        return str(sentence)

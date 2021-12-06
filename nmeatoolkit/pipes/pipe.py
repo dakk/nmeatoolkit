@@ -25,7 +25,6 @@ SOFTWARE.
 '''
 import pynmea2
 
-
 class Pipe:
     def __init__(self):
         pass 
