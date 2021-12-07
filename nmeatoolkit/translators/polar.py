@@ -31,8 +31,7 @@ class PolarTranslator(FileTranslator):
         super().__init__()
 
     def feed(self, s: pynmea2.NMEASentence) -> None:
-        if not s.isValid():
-            return None
+        pass 
 
     def result(self) -> str:
         return ''
