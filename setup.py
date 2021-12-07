@@ -31,7 +31,7 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
     name="nmeatoolkit",
-    version="0.0.1",
+    version="0.1.1",
     author="Davide Gessa",
     author_email="gessadavide@gmail.com",
     description="A comprensive software collection for nmea manipulation",
