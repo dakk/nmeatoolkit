@@ -32,6 +32,33 @@ class Pipeline:
         self.translator = translator
         self.pipes = pipes
 
+    def runPartial(self):
+        l = []
+        while not self.input.end():
+            s = self.input.readSentence()
+
+            if s == None: 
+                continue
+
+            spiped = [s]
+            for pipe in self.pipes:
+                spiped = pipe.bulkTransform(spiped)
+            
+            if self.translator:
+                for x in spiped:
+                    f = self.translator.feed(x)
+
+                    if isinstance(self.translator, StreamTranslator) and f:
+                        l.append(f)
+            else:
+                l += spiped
+                    
+        if self.translator and isinstance(self.translator, FileTranslator):
+            l = self.translator.result()
+
+        return l
+
+
     def run(self):
         while not self.input.end():
             s = self.input.readSentence()
