@@ -64,7 +64,7 @@ class TrackPointTranslator(FileTranslator):
             return
 
         # if s is HDG
-        if s.sentence_type == 'HDT':
+        if s.sentence_type == 'HDT' or s.sentence_type == 'HDM':
             self.hdg = float(s.heading)
 
         if s.sentence_type == 'MTW':
