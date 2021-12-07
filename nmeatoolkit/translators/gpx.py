@@ -36,6 +36,7 @@ class GPXTranslator(FileTranslator):
         self.aws = None
         self.watertemp = None
         self.depth = None
+        self.speed = None
         self.gpx = ''
 
     def _gpx_header(self):
@@ -80,6 +81,9 @@ class GPXTranslator(FileTranslator):
             self.twa = s.direction_true
             self.tws = s.wind_speed_knots
 
+        if s.sentence_type == 'VTG':
+            if s.spd_over_grnd_kts != None:
+                self.speed = float(s.spd_over_grnd_kts)
 
         # if s contains coordinates
         if isinstance(s, pynmea2.types.LatLonFix):
@@ -91,6 +95,8 @@ class GPXTranslator(FileTranslator):
             gpx += '<extensions>\n'
             gpx += '<gpxx:TrackPointExtension>\n'
 
+            if self.speed != None:
+                gpx += '<gpxx:speed>%s</gpxx:speed>\n' % (self.speed)
             if self.hdg != None:
                 gpx += '<gpxx:heading>%s</gpxx:heading>\n' % (self.hdg)
             if self.twa != None:

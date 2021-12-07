@@ -41,8 +41,8 @@ class Pipeline:
                 continue
 
             spiped = [s]
-            for pipe in self.pipes:
-                spiped = pipe.bulkTransform(spiped)
+            for p in self.pipes:
+                spiped = p.bulkTransform(spiped)
             
             if self.translator:
                 for x in spiped:
@@ -67,8 +67,8 @@ class Pipeline:
                 continue
 
             spiped = [s]
-            for pipe in self.pipes:
-                spiped = pipe.bulkTransform(spiped)
+            for p in self.pipes:
+                spiped = p.bulkTransform(spiped)
             
             for x in spiped:
                 f = self.translator.feed(x)

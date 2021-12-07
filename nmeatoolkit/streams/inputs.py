@@ -37,7 +37,7 @@ class Input:
     def close(self):
         raise NotImplementedError()
 
-class InputFile(Input):
+class FileInput(Input):
     def __init__(self, filepath = '--'):
         self.filepath = filepath
         if self.filepath == '--':
@@ -63,7 +63,7 @@ class InputFile(Input):
     def __del__(self):
         self.close()
 
-class InputNetwork(Input):
+class NetworkInput(Input):
     def __init__(self, host, port, protocol = 'tcp'):
         self.host = host
         self.port = port

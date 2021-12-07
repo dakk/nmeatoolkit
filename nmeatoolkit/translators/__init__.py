@@ -23,3 +23,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+from .gpx import *
+from .identity import *
+from .polar import *
+from .tostring import *
+from .trackpoint import *
+from .translator import *

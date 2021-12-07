@@ -27,7 +27,7 @@ import argparse
 
 from nmeatoolkit.pipeline import Pipeline
 
-from .streams.inputs import InputFile
+from .streams.inputs import FileInput
 from .streams.outputs import OutputFile
 from .translators.tostring import ToStringTranslator
 from .translators.gpx import GPXTranslator
@@ -83,13 +83,13 @@ def processArguments(args):
     pipes = []
 
     if args.input == '--' or args.input == None:
-        input = InputFile()
+        input = FileInput()
     elif args.input.startswith('tcp://'):
         raise Exception('Not implemented')
     elif args.input.startswith('udp://'):
         raise Exception('Not implemented')
     else:
-        input = InputFile(args.input)
+        input = FileInput(args.input)
 
     
     if args.output == '--' or args.output == None:

@@ -27,7 +27,7 @@ import pynmea2
 from .translator import FileTranslator
 
 class TrackPoint:
-    def __init__ (self, lat, lon, time, hdg = None, twa = None, tws = None, awa = None, aws = None, watertemp = None, depth = None):
+    def __init__ (self, lat, lon, time, speed = None, hdg = None, twa = None, tws = None, awa = None, aws = None, watertemp = None, depth = None):
         self.lat = lat
         self.lon = lon
         self.time = time
@@ -38,6 +38,7 @@ class TrackPoint:
         self.aws = aws
         self.watertemp = watertemp
         self.depth = depth
+        self.speed = speed
 
 
 class TrackPointTranslator(FileTranslator):
@@ -50,6 +51,7 @@ class TrackPointTranslator(FileTranslator):
         self.aws = None
         self.watertemp = None
         self.depth = None 
+        self.speed = None
 
         self.track = []
 
@@ -79,10 +81,13 @@ class TrackPointTranslator(FileTranslator):
             self.twa = s.direction_true
             self.tws = s.wind_speed_knots
 
+        if s.sentence_type == 'VTG':
+            if s.spd_over_grnd_kts != None:
+                self.speed = float(s.spd_over_grnd_kts)
 
         # if s contains coordinates
         if isinstance(s, pynmea2.types.LatLonFix):
-            self.track.append (TrackPoint(s.latitude, s.longitude, s.timestamp, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth))
+            self.track.append (TrackPoint(s.latitude, s.longitude, s.timestamp, self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth))
 
         return
 
