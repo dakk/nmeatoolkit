@@ -23,6 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+import datetime
 import pynmea2
 from .translator import FileTranslator
 
@@ -39,6 +40,9 @@ class TrackPoint:
         self.watertemp = watertemp
         self.depth = depth
         self.speed = speed
+
+    def __str__(self) -> str:
+        return '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s' % (self.lat, self.lon, self.time, self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
 
 
 class TrackPointTranslator(FileTranslator):
@@ -61,33 +65,33 @@ class TrackPointTranslator(FileTranslator):
 
         # if s is HDG
         if s.sentence_type == 'HDT':
-            self.hdg = s.heading
+            self.hdg = float(s.heading)
 
         if s.sentence_type == 'MTW':
-            self.watertemp = s.temperature
+            self.watertemp = float(s.temperature)
 
         if s.sentence_type == 'DBT':
-            self.depth = s.depth_meters
+            self.depth = float(s.depth_meters)
 
         # if s contains wind information, store on variables twa and tws
         if s.sentence_type == 'MWV':
             if s.reference == 'R':
-                self.awa = s.wind_angle
-                self.aws = s.wind_speed
+                self.awa = float(s.wind_angle)
+                self.aws = float(s.wind_speed)
             elif s.reference == 'T':
-                self.twa = s.wind_angle
-                self.tws = s.wind_speed
+                self.twa = float(s.wind_angle)
+                self.tws = float(s.wind_speed)
         if s.sentence_type == 'MWD':
-            self.twa = s.direction_true
-            self.tws = s.wind_speed_knots
+            self.twa = float(s.direction_true)
+            self.tws = float(s.wind_speed_knots)
 
         if s.sentence_type == 'VTG':
             if s.spd_over_grnd_kts != None:
                 self.speed = float(s.spd_over_grnd_kts)
 
         # if s contains coordinates
-        if isinstance(s, pynmea2.types.LatLonFix):
-            self.track.append (TrackPoint(s.latitude, s.longitude, s.timestamp, self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth))
+        if isinstance(s, pynmea2.types.LatLonFix)  and isinstance(s, pynmea2.types.DatetimeFix) and s.latitude != 0 and s.longitude != 0:
+            self.track.append (TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(s.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth))
 
         return
 
