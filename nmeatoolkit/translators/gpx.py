@@ -39,13 +39,12 @@ class GPXTranslator(FileTranslator):
         self.depth = None
         self.speed = None
         self.gpx = ''
+        self.ft = None
 
     def _gpx_header(self):
-        gpx = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        gpx += '<gpx version="1.1" creator="nmea2gpx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">\n'
-        gpx += '<metadata>\n'
-        # self.gpx += '<name>' + self.fname + '</name>\n'
-        gpx += '</metadata>\n'
+        gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>'
+        gpx += '<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:wptx1="http://www.garmin.com/xmlschemas/WaypointExtension/v1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" creator="nmeatoolkit" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd">'
+        gpx += '<metadata><link href="http://www.garmin.com"><text>Garmin International</text></link><time>' + self.ft + '</time></metadata>'
         gpx += '<trk>\n'
         gpx += '<trkseg>\n'
         return gpx
@@ -92,6 +91,9 @@ class GPXTranslator(FileTranslator):
             # gpx += '<ele>%s</ele>\n' % (s.altitude)
             gpx += '<time>%s</time>\n' % (datetime.datetime.combine(s.datestamp, s.timestamp))
 
+            if self.ft == None:
+                self.ft = datetime.datetime.combine(s.datestamp, s.timestamp).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+
             # Add extensions
             gpx += '<extensions>\n'
             gpx += '<gpxx:TrackPointExtension>\n'
@@ -109,7 +111,7 @@ class GPXTranslator(FileTranslator):
             if self.aws != None:
                 gpx += '<gpxx:aws>%s</gpxx:aws>\n' % (self.aws)
             if self.watertemp != None:
-                gpx += '<gpxx:watertemp>%s</gpxx:watertemp>\n' % (self.watertemp)
+                gpx += '<gpxx:wtemp>%s</gpxx:wtemp>\n' % (self.watertemp)
             if self.depth != None:
                 gpx += '<gpxx:depth>%s</gpxx:depth>\n' % (self.depth)
 

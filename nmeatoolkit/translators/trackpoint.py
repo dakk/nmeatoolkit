@@ -25,7 +25,7 @@ SOFTWARE.
 '''
 import datetime
 import pynmea2
-from .translator import FileTranslator
+from .translator import FileTranslator, StreamTranslator
 
 class TrackPoint:
     def __init__ (self, lat, lon, time, speed = None, hdg = None, twa = None, tws = None, awa = None, aws = None, watertemp = None, depth = None):
@@ -45,7 +45,7 @@ class TrackPoint:
         return '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s' % (self.lat, self.lon, self.time, self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
 
 
-class TrackPointTranslator(FileTranslator):
+class TrackPointTranslator(FileTranslator, StreamTranslator):
     def __init__(self):
         super().__init__()
         self.hdg = None
@@ -59,7 +59,7 @@ class TrackPointTranslator(FileTranslator):
 
         self.track = []
 
-    def feed(self, s: pynmea2.NMEASentence) -> None:
+    def feed(self, s: pynmea2.NMEASentence) -> TrackPoint:
         if not s:
             return
 
@@ -90,8 +90,10 @@ class TrackPointTranslator(FileTranslator):
                 self.speed = float(s.spd_over_grnd_kts)
 
         # if s contains coordinates
-        if isinstance(s, pynmea2.types.LatLonFix)  and isinstance(s, pynmea2.types.DatetimeFix) and s.latitude != 0 and s.longitude != 0:
-            self.track.append (TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(s.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth))
+        if isinstance(s, pynmea2.types.LatLonFix) and isinstance(s, pynmea2.types.DatetimeFix) and s.latitude != 0 and s.longitude != 0:
+            tp = TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(s.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
+            self.track.append (tp)
+            return tp
 
         return
 
