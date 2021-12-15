@@ -112,7 +112,7 @@ class TrackPointTranslator(FileTranslator, StreamTranslator):
             self.datestamp = s.datestamp
 
         # if s contains coordinates
-        if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0:
+        if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0 and self.datestamp != None:
             tp = TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(self.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
             self.track.append (tp)
             return tp

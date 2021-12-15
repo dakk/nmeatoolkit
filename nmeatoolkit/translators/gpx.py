@@ -90,7 +90,7 @@ class GPXTranslator(FileTranslator):
             self.datestamp = s.datestamp
 
         # if s contains coordinates
-        if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0:
+        if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0 and self.datestamp != None:
             gpx = '<trkpt lat="%s" lon="%s">\n' % (s.latitude, s.longitude)
             # gpx += '<ele>%s</ele>\n' % (s.altitude)
             gpx += '<time>%s</time>\n' % (datetime.datetime.combine(self.datestamp, s.timestamp))
