@@ -58,22 +58,31 @@ class Pipeline:
 
         return l
 
+    def runOnce(self):
+        if self.input.end():
+            return False 
+        
+        s = self.input.readSentence()
+
+        if s == None: 
+            return True
+
+        spiped = [s]
+        for p in self.pipes:
+            spiped = p.bulkTransform(spiped)
+        
+        for x in spiped:
+            f = self.translator.feed(x)
+            if isinstance(self.translator, StreamTranslator) and f:
+                self.output.write(f)
+
+        return True 
 
     def run(self):
         while not self.input.end():
-            s = self.input.readSentence()
-
-            if s == None: 
-                continue
-
-            spiped = [s]
-            for p in self.pipes:
-                spiped = p.bulkTransform(spiped)
-            
-            for x in spiped:
-                f = self.translator.feed(x)
-                if isinstance(self.translator, StreamTranslator) and f:
-                    self.output.write(f)
+            r = self.runOnce()
+            if not r:
+                break
                     
         if isinstance(self.translator, FileTranslator):
             self.output.write(self.translator.result())

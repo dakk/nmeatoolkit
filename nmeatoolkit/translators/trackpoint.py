@@ -56,6 +56,7 @@ class TrackPointTranslator(FileTranslator, StreamTranslator):
         self.watertemp = None
         self.depth = None 
         self.speed = None
+        self.datestamp = None
 
         self.track = []
 
@@ -65,33 +66,54 @@ class TrackPointTranslator(FileTranslator, StreamTranslator):
 
         # if s is HDG
         if s.sentence_type == 'HDT' or s.sentence_type == 'HDM':
-            self.hdg = float(s.heading)
+            try:
+                self.hdg = float(s.heading)
+            except:
+                pass
 
         if s.sentence_type == 'MTW':
-            self.watertemp = float(s.temperature)
+            try:
+                self.watertemp = float(s.temperature)
+            except:
+                pass
 
         if s.sentence_type == 'DBT':
-            self.depth = float(s.depth_meters)
+            try:
+                self.depth = float(s.depth_meters)
+            except:
+                pass
 
         # if s contains wind information, store on variables twa and tws
         if s.sentence_type == 'MWV':
             if s.reference == 'R':
-                self.awa = float(s.wind_angle)
-                self.aws = float(s.wind_speed)
+                try:
+                    self.awa = float(s.wind_angle)
+                    self.aws = float(s.wind_speed)
+                except:
+                    pass
             elif s.reference == 'T':
-                self.twa = float(s.wind_angle)
-                self.tws = float(s.wind_speed)
+                try:
+                    self.twa = float(s.wind_angle)
+                    self.tws = float(s.wind_speed)
+                except:
+                    pass
         if s.sentence_type == 'MWD':
-            self.twa = float(s.direction_true)
-            self.tws = float(s.wind_speed_knots)
+            try:
+                self.twa = float(s.direction_true)
+                self.tws = float(s.wind_speed_knots)
+            except:
+                pass
 
         if s.sentence_type == 'VTG':
             if s.spd_over_grnd_kts != None:
                 self.speed = float(s.spd_over_grnd_kts)
 
+        if isinstance(s, pynmea2.types.DatetimeFix) or s.sentence_type == 'ZDA':
+            self.datestamp = s.datestamp
+
         # if s contains coordinates
-        if isinstance(s, pynmea2.types.LatLonFix) and isinstance(s, pynmea2.types.DatetimeFix) and s.latitude != 0 and s.longitude != 0:
-            tp = TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(s.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
+        if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0:
+            tp = TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(self.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
             self.track.append (tp)
             return tp
 

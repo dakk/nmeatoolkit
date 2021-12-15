@@ -40,6 +40,7 @@ class GPXTranslator(FileTranslator):
         self.speed = None
         self.gpx = ''
         self.ft = None
+        self.datestamp = None
 
     def _gpx_header(self):
         gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>'
@@ -85,11 +86,14 @@ class GPXTranslator(FileTranslator):
             if s.spd_over_grnd_kts != None:
                 self.speed = float(s.spd_over_grnd_kts)
 
+        if isinstance(s, pynmea2.types.DatetimeFix) or s.sentence_type == 'ZDA':
+            self.datestamp = s.datestamp
+
         # if s contains coordinates
-        if isinstance(s, pynmea2.types.LatLonFix) and isinstance(s, pynmea2.types.DatetimeFix) and s.latitude != 0 and s.longitude != 0:
+        if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0:
             gpx = '<trkpt lat="%s" lon="%s">\n' % (s.latitude, s.longitude)
             # gpx += '<ele>%s</ele>\n' % (s.altitude)
-            gpx += '<time>%s</time>\n' % (datetime.datetime.combine(s.datestamp, s.timestamp))
+            gpx += '<time>%s</time>\n' % (datetime.datetime.combine(self.datestamp, s.timestamp))
 
             if self.ft == None:
                 self.ft = datetime.datetime.combine(s.datestamp, s.timestamp).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
