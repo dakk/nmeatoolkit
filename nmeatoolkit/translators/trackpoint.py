@@ -56,9 +56,11 @@ class TrackPoint:
         pass
 
 class TrackPointTranslator(FileTranslator, StreamTranslator, ExtractorBaseTranslator):
-    def __init__(self):
+    def __init__(self, diluition = None):
         super().__init__()
         self.track = []
+        self.diluition = diluition
+        self.i = 0
 
     def feed(self, s: pynmea2.NMEASentence) -> TrackPoint:
         if not s:
@@ -67,6 +69,9 @@ class TrackPointTranslator(FileTranslator, StreamTranslator, ExtractorBaseTransl
         self.extract(s)
 
         if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0 and self.datestamp != None:
+            if self.diluition and self.i % self.diluition != 0:
+                return 
+                
             tp = TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(self.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
             self.track.append (tp)
             return tp
