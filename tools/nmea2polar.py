@@ -30,7 +30,7 @@ def main():
     args = parser.parse_args()
 
     args.pipes = 'truewind' + ('' if args.pipes == None else ',' + args.pipes)
-    args.format = 'polar'
+    args.format = 'pol'
 
     pipeline = processArguments(args)
     pipeline.run()

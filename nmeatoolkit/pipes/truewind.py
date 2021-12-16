@@ -34,23 +34,34 @@ class TrueWindPipe(Pipe):
 
     def __init__(self):
         self.speed = None
+        self.hdg = None
 
     def transform(self, s: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
         sl = [s]
 
-        if s.sentence_type == 'MWV':
+        if s.sentence_type == 'HDT' or s.sentence_type == 'HDM':
+            try:
+                self.hdg = float(s.heading)
+            except:
+                pass
+
+        elif s.sentence_type == 'MWV' and self.hdg:
             # R stands to relative to bow?
             if s.reference == 'R':
+                # transform s.wind_angle relative to bow, to real wind angle (relative to north)
+                # and then to relative to north
                 awa = float(s.wind_angle)
                 aws = float(s.wind_speed)
+                awd = awa + self.hdg
 
                 # Calculate twa and tws
                 # https://en.wikipedia.org/wiki/Apparent_wind#Calculating_apparent_velocity_and_angle
-                if self.speed != None and aws != 0:                    
+                if self.speed != None and self.speed > 0 and aws > 0:     
                     try:
+                        twa = math.degrees(math.atan2(aws * math.sin(math.radians(awd)), self.speed * math.cos(math.radians(awa))))
+                        tws = math.sqrt(aws ** 2 + self.speed ** 2 - 2 * aws * self.speed * math.cos(math.radians(awa - twa)))                    
+
                         awar = math.radians(awa)
-                        tws = math.sqrt(aws**2 + self.speed**2 - 2 *
-                                        awa*self.speed*math.cos(awar))
                         if awa > 180:
                             twa = 360 - math.degrees(math.acos((aws * math.cos(awar) - self.speed) / tws))
                         else:

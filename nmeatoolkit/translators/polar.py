@@ -23,15 +23,65 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+import math
 import pynmea2
-from .translator import FileTranslator
+from .translator import ExtractorBaseTranslator, FileTranslator
 
-class PolarTranslator(FileTranslator):
+class PolarTranslator(FileTranslator, ExtractorBaseTranslator):
     def __init__(self):
         super().__init__()
+        self.ttws = []
+        self.ttwa = []
+        self.speedTable = {}
+
 
     def feed(self, s: pynmea2.NMEASentence) -> None:
-        pass 
+        if not s:
+            return
+
+        self.extract(s)
+
+        if self.tws and self.twa and self.speed and self.hdg:
+            tws = int(math.floor(self.tws / 2)) * 2
+            twa = int(math.floor(self.twa / 5)) * 5
+
+            speed = self.speed
+
+            if twa > 180:
+                twa = twa - 180
+
+            if speed == 0 or twa > 180. or tws > 45 or twa < 30:
+                return
+
+            if not tws in self.ttws:
+                self.ttws.append(tws)
+            if not twa in self.ttwa:
+                self.ttwa.append(twa)
+
+            if (tws,twa) in self.speedTable:
+                if self.speedTable[(tws,twa)] < speed:
+                    self.speedTable[(tws,twa)] = speed
+            else:
+                self.speedTable[(tws, twa)] = speed 
+        
 
     def result(self) -> str:
-        return ''
+        self.ttws.sort()
+        self.ttwa.sort()
+
+        s = 'TWA\TWS'
+        for x in self.ttws:
+            s += '\t%d' % x
+        s += '\n'
+
+        prev = 0
+        for y in self.ttwa:
+            s += '%d' % y
+            for x in self.ttws:
+                if (x, y) in self.speedTable:
+                    s += '\t{:.1f}'.format(self.speedTable[(x, y)])
+                else:
+                    s += '\t{:.1f}'.format(0)
+            s += '\n'
+
+        return s
