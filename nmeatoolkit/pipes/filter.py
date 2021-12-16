@@ -23,7 +23,21 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
-from .pipe import *
-from .seatalk import *
-from .truewind import *
-from .filter import *
+import pynmea2
+from .pipe import Pipe	
+
+class FilterPipe(Pipe):
+	"""  """
+	def __init__(self, exclude = None, include = None):
+		self.exclude = exclude
+		self.include = include
+
+	def transform(self, sentence: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
+		s = str(sentence).split(',')[0][1:]
+
+		if self.exclude and s in self.exclude:
+			return []
+		if self.include and not (s in self.include):
+			return []
+		
+		return [sentence]

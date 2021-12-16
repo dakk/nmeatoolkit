@@ -25,22 +25,13 @@ SOFTWARE.
 '''
 import pynmea2
 import datetime
-from .translator import FileTranslator
+from .translator import ExtractorBaseTranslator, FileTranslator
 
-class GPXTranslator(FileTranslator):
+class GPXTranslator(FileTranslator, ExtractorBaseTranslator):
     def __init__(self):
         super().__init__()
-        self.hdg = None
-        self.twa = None
-        self.tws = None
-        self.awa = None
-        self.aws = None
-        self.watertemp = None
-        self.depth = None
-        self.speed = None
         self.gpx = ''
         self.ft = None
-        self.datestamp = None
 
     def _gpx_header(self):
         gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>'
@@ -60,36 +51,8 @@ class GPXTranslator(FileTranslator):
         if not s:
             return
 
-        # if s is HDG
-        if s.sentence_type == 'HDT' or s.sentence_type == 'HDM':
-            self.hdg = float(s.heading)
+        self.extract(s)
 
-        if s.sentence_type == 'MTW':
-            self.watertemp = float(s.temperature)
-
-        if s.sentence_type == 'DBT':
-            self.depth = float(s.depth_meters)
-
-        # if s contains wind information, store on variables twa and tws
-        if s.sentence_type == 'MWV':
-            if s.reference == 'R':
-                self.awa = float(s.wind_angle)
-                self.aws = float(s.wind_speed)
-            elif s.reference == 'T':
-                self.twa = float(s.wind_angle)
-                self.tws = float(s.wind_speed)
-        if s.sentence_type == 'MWD':
-            self.twa = float(s.direction_true)
-            self.tws = float(s.wind_speed_knots)
-
-        if s.sentence_type == 'VTG':
-            if s.spd_over_grnd_kts != None:
-                self.speed = float(s.spd_over_grnd_kts)
-
-        if isinstance(s, pynmea2.types.DatetimeFix) or s.sentence_type == 'ZDA':
-            self.datestamp = s.datestamp
-
-        # if s contains coordinates
         if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0 and self.datestamp != None:
             gpx = '<trkpt lat="%s" lon="%s">\n' % (s.latitude, s.longitude)
             # gpx += '<ele>%s</ele>\n' % (s.altitude)

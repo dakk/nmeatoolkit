@@ -41,3 +41,69 @@ class FileTranslator(Translator):
     def result(self) -> str:
         raise NotImplementedError()
 
+
+
+class ExtractorBaseTranslator():
+    def __init__(self):
+        super().__init__()
+        self.hdg = None
+        self.twa = None
+        self.tws = None
+        self.awa = None
+        self.aws = None
+        self.watertemp = None
+        self.depth = None 
+        self.speed = None
+        self.datestamp = None
+
+    def extract(self, s: pynmea2.NMEASentence):
+        if not s:
+            return
+
+        # if s is HDG
+        if s.sentence_type == 'HDT' or s.sentence_type == 'HDM':
+            try:
+                self.hdg = float(s.heading)
+            except:
+                pass
+
+        if s.sentence_type == 'MTW':
+            try:
+                self.watertemp = float(s.temperature)
+            except:
+                pass
+
+        if s.sentence_type == 'DBT':
+            try:
+                self.depth = float(s.depth_meters)
+            except:
+                pass
+
+        # if s contains wind information, store on variables twa and tws
+        if s.sentence_type == 'MWV':
+            if s.reference == 'R':
+                try:
+                    self.awa = float(s.wind_angle)
+                    self.aws = float(s.wind_speed)
+                except:
+                    pass
+            elif s.reference == 'T':
+                try:
+                    self.twa = float(s.wind_angle)
+                    self.tws = float(s.wind_speed)
+                except:
+                    pass
+        if s.sentence_type == 'MWD':
+            try:
+                self.twa = float(s.direction_true)
+                self.tws = float(s.wind_speed_knots)
+            except:
+                pass
+
+        if s.sentence_type == 'VTG':
+            if s.spd_over_grnd_kts != None:
+                self.speed = float(s.spd_over_grnd_kts)
+
+        if isinstance(s, pynmea2.types.DatetimeFix) or s.sentence_type == 'ZDA':
+            self.datestamp = s.datestamp
+
