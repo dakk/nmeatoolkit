@@ -33,7 +33,7 @@ class FilterPipe(Pipe):
 		self.include = include
 
 	def transform(self, sentence: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
-		s = str(sentence).split(',')[0][1:]
+		s = sentence.sentence_type
 
 		if self.exclude and s in self.exclude:
 			return []
