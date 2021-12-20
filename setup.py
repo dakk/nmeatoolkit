@@ -31,7 +31,7 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
     name="nmeatoolkit",
-    version="0.1.4",
+    version="0.1.5",
     author="Davide Gessa",
     author_email="gessadavide@gmail.com",
     description="A comprensive software collection for nmea manipulation",
@@ -51,6 +51,11 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Development Status :: 4 - Beta",
+        "Topic :: Scientific/Engineering :: Information Analysis",
+        "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Utilities"
     ],
     python_requires='>=3.6',
     requires=open('requirements.txt').read().splitlines()

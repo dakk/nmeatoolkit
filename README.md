@@ -53,6 +53,18 @@ nmeatk -i data.nmea -p truewind -o output.gpx -f gpx
 ```
 
 
+## Pipes
+
+### Filter
+
+### Crop
+
+### Seatalk
+
+### Truewind
+
+
+
 ## License
 
 ```

@@ -26,6 +26,8 @@ SOFTWARE.
 import argparse
 
 from nmeatoolkit.pipeline import Pipeline
+from nmeatoolkit.pipes.crop import CropPipe
+from nmeatoolkit.pipes.filter import FilterPipe
 
 from .streams.inputs import FileInput
 from .streams.outputs import OutputFile
@@ -114,8 +116,18 @@ def processArguments(args):
         ppipe = pargs[0]
         if len(pargs) == 2:
             pargs = pargs[2].split(']')
+        pargs = dict(list(map(lambda x: x.split('='), pargs)))
 
-        if ppipe == 'seatalk':
+
+        if ppipe == 'crop':
+            fr = pargs['from'] if 'from' in pargs else None
+            to = pargs['to'] if 'to' in pargs else None
+            pipes.append(CropPipe(fr, to))
+        elif ppipe == 'filter':
+            exclude = pargs['exclude'] if 'exclude' in pargs else None
+            include = pargs['include'] if 'include' in pargs else None
+            pipes.append(FilterPipe(exclude, include))
+        elif ppipe == 'seatalk':
             pipes.append(SeatalkPipe())
         elif ppipe == 'truewind':
             pipes.append(TrueWindPipe())
