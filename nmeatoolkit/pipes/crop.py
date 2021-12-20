@@ -34,8 +34,9 @@ class CropPipe(Pipe):
 		if fr == None and to == None:
 			raise Exception("You must specify at least one between fr and to")
 
-		self.fr = parser.parse(fr)
-		self.to = parser.parse(to)
+
+		self.fr = parser.parse(fr) if isinstance(fr, str) else fr
+		self.to = parser.parse(to) if isinstance(to, str) else to
 
 		self.datestamp = None
 		self.timestamp = None 
@@ -50,7 +51,7 @@ class CropPipe(Pipe):
 			self.timestamp = s.timestamp
 
 		if self.datestamp and self.timestamp:
-			self.datetime = datetime.datetime.combine(self.datestamp, s.timestamp)
+			self.datetime = datetime.datetime.combine(self.datestamp, self.timestamp)
 
 		if self.datetime and self.to and self.datetime > self.to:
 				return []

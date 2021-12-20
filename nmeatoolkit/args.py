@@ -30,7 +30,7 @@ from nmeatoolkit.pipes.crop import CropPipe
 from nmeatoolkit.pipes.filter import FilterPipe
 
 from .streams.inputs import FileInput
-from .streams.outputs import OutputFile
+from .streams.outputs import FileOutput
 from .translators.tostring import ToStringTranslator
 from .translators.gpx import GPXTranslator
 from .translators.polar import PolarTranslator
@@ -95,13 +95,13 @@ def processArguments(args):
 
     
     if args.output == '--' or args.output == None:
-        output = OutputFile()
+        output = FileOutput()
     elif args.output.startswith('tcp://'):
         raise Exception('Not implemented')
     elif args.output.startswith('udp://'):
         raise Exception('Not implemented')
     else:
-        output = OutputFile(args.output)
+        output = FileOutput(args.output)
 
 
     if args.format == 'nmea':
