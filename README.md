@@ -1,5 +1,9 @@
 # nmeatoolkit
 
+[![Build Status](https://travis-ci.com/dakk/nmeatoolkit.svg?branch=master)](https://travis-ci.com/dakk/nmeatoolkit.svg?branch=master)
+[![PyPI version](https://badge.fury.io/py/nmeatoolkit.svg)](https://badge.fury.io/py/nmeatoolkit)
+![PyPI - License](https://img.shields.io/pypi/l/nmeatoolkit)
+
 A comprensive software collection for nmea manipulation; it includes a library and a collections of command line tools.
 
 ## Library
