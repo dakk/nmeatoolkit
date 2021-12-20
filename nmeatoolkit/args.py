@@ -116,7 +116,10 @@ def processArguments(args):
         ppipe = pargs[0]
         if len(pargs) == 2:
             pargs = pargs[2].split(']')
-        pargs = dict(list(map(lambda x: x.split('='), pargs)))
+        try:
+            pargs = dict(list(map(lambda x: x.split('='), pargs)))
+        except:
+            pargs = {}
 
 
         if ppipe == 'crop':
