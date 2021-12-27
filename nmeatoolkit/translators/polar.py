@@ -74,7 +74,6 @@ class PolarTranslator(FileTranslator, ExtractorBaseTranslator):
             s += '\t%d' % x
         s += '\n'
 
-        prev = 0
         for y in self.ttwa:
             s += '%d' % y
             for x in self.ttws:
