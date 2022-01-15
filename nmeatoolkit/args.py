@@ -109,32 +109,35 @@ def processArguments(args):
     elif args.format == 'pol':
         translator = PolarTranslator()
     elif args.format == 'gpx':
-        translator = GPXTranslator()
+        translator = GPXTranslator(extensions=False)
+    elif args.format == 'gpx-full':
+        translator = GPXTranslator(extensions=True)
 
-    for p in args.pipes.split(','):
-        pargs = p.split('[')
-        ppipe = pargs[0]
-        if len(pargs) == 2:
-            pargs = pargs[2].split(']')
-            try:
-                pargs = dict(list(map(lambda x: x.split('='), pargs)))
-            except:
+    if args.pipes:
+        for p in args.pipes.split(','):
+            pargs = p.split('[')
+            ppipe = pargs[0]
+            if len(pargs) == 2:
+                pargs = pargs[2].split(']')
+                try:
+                    pargs = dict(list(map(lambda x: x.split('='), pargs)))
+                except:
+                    pargs = {}
+            else:
                 pargs = {}
-        else:
-            pargs = {}
 
 
-        if ppipe == 'crop':
-            fr = pargs['from'] if 'from' in pargs else None
-            to = pargs['to'] if 'to' in pargs else None
-            pipes.append(CropPipe(fr, to))
-        elif ppipe == 'filter':
-            exclude = pargs['exclude'] if 'exclude' in pargs else None
-            include = pargs['include'] if 'include' in pargs else None
-            pipes.append(FilterPipe(exclude, include))
-        elif ppipe == 'seatalk':
-            pipes.append(SeatalkPipe())
-        elif ppipe == 'truewind':
-            pipes.append(TrueWindPipe())
+            if ppipe == 'crop':
+                fr = pargs['from'] if 'from' in pargs else None
+                to = pargs['to'] if 'to' in pargs else None
+                pipes.append(CropPipe(fr, to))
+            elif ppipe == 'filter':
+                exclude = pargs['exclude'] if 'exclude' in pargs else None
+                include = pargs['include'] if 'include' in pargs else None
+                pipes.append(FilterPipe(exclude, include))
+            elif ppipe == 'seatalk':
+                pipes.append(SeatalkPipe())
+            elif ppipe == 'truewind':
+                pipes.append(TrueWindPipe())
 
     return Pipeline(input, output, translator, pipes)

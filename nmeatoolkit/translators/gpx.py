@@ -28,10 +28,11 @@ import datetime
 from .translator import ExtractorBaseTranslator, FileTranslator
 
 class GPXTranslator(FileTranslator, ExtractorBaseTranslator):
-    def __init__(self):
+    def __init__(self, extensions=False):
         super().__init__()
         self.gpx = ''
         self.ft = None
+        self.extensions = extensions
 
     def _gpx_header(self):
         gpx = '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>'
@@ -61,29 +62,33 @@ class GPXTranslator(FileTranslator, ExtractorBaseTranslator):
             if self.ft == None:
                 self.ft = datetime.datetime.combine(s.datestamp, s.timestamp).strftime('%Y-%m-%dT%H:%M:%S.%f%z')
 
-            # Add extensions
-            gpx += '<extensions>\n'
-            gpx += '<gpxx:TrackPointExtension>\n'
-
             if self.speed != None:
-                gpx += '<gpxx:speed>%s</gpxx:speed>\n' % (self.speed)
-            if self.hdg != None:
-                gpx += '<gpxx:heading>%s</gpxx:heading>\n' % (self.hdg)
-            if self.twa != None:
-                gpx += '<gpxx:twa>%s</gpxx:twa>\n' % (self.twa)
-            if self.tws != None:
-                gpx += '<gpxx:tws>%s</gpxx:tws>\n' % (self.tws)
-            if self.awa != None:
-                gpx += '<gpxx:awa>%s</gpxx:awa>\n' % (self.awa)
-            if self.aws != None:
-                gpx += '<gpxx:aws>%s</gpxx:aws>\n' % (self.aws)
-            if self.watertemp != None:
-                gpx += '<gpxx:wtemp>%s</gpxx:wtemp>\n' % (self.watertemp)
-            if self.depth != None:
-                gpx += '<gpxx:depth>%s</gpxx:depth>\n' % (self.depth)
+                gpx += '<speed>%s</speed>\n' % (self.speed)
 
-            gpx += '</gpxx:TrackPointExtension>\n'
-            gpx += '</extensions>\n'
+            # Add extensions
+            if self.extensions:
+                gpx += '<extensions>\n'
+                gpx += '<gpxx:TrackPointExtension>\n'
+
+                # if self.speed != None:
+                #     gpx += '<gpxx:speed>%s</gpxx:speed>\n' % (self.speed)
+                if self.hdg != None:
+                    gpx += '<gpxx:heading>%s</gpxx:heading>\n' % (self.hdg)
+                if self.twa != None:
+                    gpx += '<gpxx:twa>%s</gpxx:twa>\n' % (self.twa)
+                if self.tws != None:
+                    gpx += '<gpxx:tws>%s</gpxx:tws>\n' % (self.tws)
+                if self.awa != None:
+                    gpx += '<gpxx:awa>%s</gpxx:awa>\n' % (self.awa)
+                if self.aws != None:
+                    gpx += '<gpxx:aws>%s</gpxx:aws>\n' % (self.aws)
+                if self.watertemp != None:
+                    gpx += '<gpxx:wtemp>%s</gpxx:wtemp>\n' % (self.watertemp)
+                if self.depth != None:
+                    gpx += '<gpxx:depth>%s</gpxx:depth>\n' % (self.depth)
+
+                gpx += '</gpxx:TrackPointExtension>\n'
+                gpx += '</extensions>\n'
             
             gpx += '</trkpt>\n'     
             self.gpx += gpx
