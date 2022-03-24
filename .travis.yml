@@ -4,8 +4,8 @@ python:
   - "3.8"
   - "3.9"
 before_install:
-  # - sudo apt-get --quiet update7
-  - sudo pip install --upgrade setuptools
+  - sudo apt-get --quiet update
+  #- sudo pip install --upgrade setuptools
 install:
   - pip install -r requirements.txt
 script:
