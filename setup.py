@@ -58,5 +58,6 @@ setuptools.setup(
         "Topic :: Utilities"
     ],
     python_requires='>=3.6',
-    requires=open('requirements.txt').read().splitlines()
+    requires=open('requirements.txt').read().splitlines(),
+	test_suite = 'tests'
 )
