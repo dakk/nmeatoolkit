@@ -3,12 +3,10 @@ python:
   - "3.7"
   - "3.8"
   - "3.9"
-# command to install dependencies
 before_install:
   # - sudo apt-get --quiet update7
   - sudo pip install --upgrade setuptools
-# install:
-#   - pip install -r requirements.txt
-# command to run tests
+install:
+  - pip install -r requirements.txt
 script:
   - python setup.py test
