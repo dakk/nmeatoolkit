@@ -23,7 +23,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 import datetime
+from typing import List
 
 import pynmea2
 from dateutil import parser
@@ -45,7 +47,7 @@ class CropPipe(Pipe):
         self.timestamp = None
         self.datetime = None
 
-    def transform(self, s: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
+    def transform(self, s: pynmea2.NMEASentence) -> List[pynmea2.NMEASentence]:
         if isinstance(s, pynmea2.types.DatetimeFix) or s.sentence_type == "ZDA":
             self.datestamp = s.datestamp
 

@@ -23,6 +23,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from typing import List
+
 import pynmea2
 
 
@@ -30,12 +32,12 @@ class Pipe:
     def __init__(self):
         pass
 
-    def transform(self, sentence: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
+    def transform(self, sentence: pynmea2.NMEASentence) -> List[pynmea2.NMEASentence]:
         raise NotImplementedError
 
     def bulk_transform(
-        self, sentences: list[pynmea2.NMEASentence]
-    ) -> list[pynmea2.NMEASentence]:
+        self, sentences: List[pynmea2.NMEASentence]
+    ) -> List[pynmea2.NMEASentence]:
         snew = []
         for x in sentences:
             snew += self.transform(x)

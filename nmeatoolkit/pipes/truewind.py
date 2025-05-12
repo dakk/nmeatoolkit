@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import math
+from typing import List
 
 import pynmea2
 
@@ -39,7 +40,7 @@ class TrueWindPipe(Pipe):
 
     def transform(  # noqa: C901
         self, s: pynmea2.NMEASentence
-    ) -> list[pynmea2.NMEASentence]:
+    ) -> List[pynmea2.NMEASentence]:
         sl = [s]
 
         if s.sentence_type == "HDT" or s.sentence_type == "HDM":
