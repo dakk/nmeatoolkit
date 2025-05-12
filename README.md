@@ -1,6 +1,6 @@
 # nmeatoolkit
 
-[![Build Status](https://travis-ci.com/dakk/nmeatoolkit.svg?branch=master)](https://travis-ci.com/dakk/nmeatoolkit.svg?branch=master)
+![CI Status](https://github.com/dakk/nmeatoolkit/actions/workflows/ci.yaml/badge.svg)
 [![PyPI version](https://badge.fury.io/py/nmeatoolkit.svg)](https://badge.fury.io/py/nmeatoolkit)
 ![PyPI - License](https://img.shields.io/pypi/l/nmeatoolkit)
 
