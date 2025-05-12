@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,30 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import datetime
+from typing import Optional
+
 import pynmea2
+
 from .translator import ExtractorBaseTranslator, FileTranslator, StreamTranslator
 
+
 class TrackPoint:
-    def __init__ (self, lat, lon, time, speed = None, hdg = None, twa = None, tws = None, awa = None, aws = None, watertemp = None, depth = None):
+    def __init__(
+        self,
+        lat,
+        lon,
+        time,
+        speed=None,
+        hdg=None,
+        twa=None,
+        tws=None,
+        awa=None,
+        aws=None,
+        watertemp=None,
+        depth=None,
+    ):
         self.lat = lat
         self.lon = lon
         self.time = time
@@ -42,41 +59,71 @@ class TrackPoint:
         self.speed = speed
 
     def __str__(self) -> str:
-        return '%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s' % (self.lat, self.lon, self.time, self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
+        return "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s" % (
+            self.lat,
+            self.lon,
+            self.time,
+            self.speed,
+            self.hdg,
+            self.twa,
+            self.tws,
+            self.awa,
+            self.aws,
+            self.watertemp,
+            self.depth,
+        )
 
     @staticmethod
-    def fromGPX():
-        pass 
+    def from_gpx():
+        pass
 
-    def toGPX(self):
+    def to_gpx(self):
         pass
 
     @staticmethod
-    def pointsToGPX(points):
+    def points_to_gpx(points):
         pass
+
 
 class TrackPointTranslator(FileTranslator, StreamTranslator, ExtractorBaseTranslator):
-    def __init__(self, diluition = None):
+    def __init__(self, diluition=None):
         super().__init__()
         self.track = []
         self.diluition = diluition
         self.i = 0
 
-    def feed(self, s: pynmea2.NMEASentence) -> TrackPoint:
+    def feed(self, s: pynmea2.NMEASentence) -> Optional[TrackPoint]:
         if not s:
-            return
+            return None
 
         self.extract(s)
 
-        if isinstance(s, pynmea2.types.LatLonFix) and s.latitude != 0 and s.longitude != 0 and self.datestamp != None:
+        if (
+            isinstance(s, pynmea2.types.LatLonFix)
+            and s.latitude != 0
+            and s.longitude != 0
+            and self.datestamp is not None
+        ):
             if self.diluition and self.i % self.diluition != 0:
-                return 
-                
-            tp = TrackPoint(s.latitude, s.longitude, datetime.datetime.combine(self.datestamp, s.timestamp), self.speed, self.hdg, self.twa, self.tws, self.awa, self.aws, self.watertemp, self.depth)
-            self.track.append (tp)
+                return None
+
+            tp = TrackPoint(
+                s.latitude,
+                s.longitude,
+                datetime.datetime.combine(self.datestamp, s.timestamp),
+                self.speed,
+                self.hdg,
+                self.twa,
+                self.tws,
+                self.awa,
+                self.aws,
+                self.watertemp,
+                self.depth,
+            )
+            self.track.append(tp)
             return tp
 
-        return
+        return None
 
     def result(self) -> str:
         return self.track

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import socket
 import sys
+from io import TextIOWrapper
+
 import pynmea2
 
+
 class Input:
-    def readSentence(self) -> pynmea2.NMEASentence:
+    def read_sentence(self) -> pynmea2.NMEASentence:
         raise NotImplementedError()
 
     def end(self):
@@ -37,28 +40,29 @@ class Input:
     def close(self):
         raise NotImplementedError()
 
+
 class FileInput(Input):
-    file = None 
-    
-    def __init__(self, filepath = '--'):
+    file: TextIOWrapper
+
+    def __init__(self, filepath="--"):
         self.filepath = filepath
-        if self.filepath == '--':
+        if self.filepath == "--":
             self.file = sys.stdin
         else:
-            self.file = open(filepath, 'r')
-        self.lastLine = 'NMEA'
+            self.file = open(filepath, "r")
+        self.lastLine = "NMEA"
 
-    def readSentence(self) -> pynmea2.NMEASentence:
+    def read_sentence(self) -> pynmea2.NMEASentence:
         self.lastLine = self.file.readline()
-        
+
         try:
-            return pynmea2.parse(self.lastLine.replace('\n', ''))
+            return pynmea2.parse(self.lastLine.replace("\n", ""))
         except pynmea2.nmea.ParseError:
             return None
 
     def end(self):
-        return self.lastLine == ''
-        
+        return self.lastLine == ""
+
     def close(self):
         self.file.close()
 
@@ -66,23 +70,24 @@ class FileInput(Input):
         if self.file:
             self.close()
 
+
 class NetworkInput(Input):
-    def __init__(self, host, port, protocol = 'tcp'):
+    def __init__(self, host, port, protocol="tcp"):
         self.host = host
         self.port = port
         self.protocol = protocol
 
-        if self.protocol == 'tcp':
+        if self.protocol == "tcp":
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        
+
         self.socket.connect((host, port))
 
-    def readSentence(self) -> pynmea2.NMEASentence:
-        l = self.socket.recv(1024).decode('utf-8')
+    def read_sentence(self) -> pynmea2.NMEASentence:
+        sent_s = self.socket.recv(1024).decode("utf-8")
         try:
-            return pynmea2.parse(l)
+            return pynmea2.parse(sent_s)
         except pynmea2.nmea.ParseError:
             return None
 

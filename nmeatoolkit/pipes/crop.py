@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,41 +22,43 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
-import pynmea2
+"""
 import datetime
-from .pipe import Pipe	
+
+import pynmea2
 from dateutil import parser
 
+from .pipe import Pipe
+
+
 class CropPipe(Pipe):
-	"""  """
-	def __init__(self, fr=None, to=None):
-		if fr == None and to == None:
-			raise Exception("You must specify at least one between fr and to")
+    """ """
 
+    def __init__(self, fr=None, to=None):
+        if fr is None and to is None:
+            raise Exception("You must specify at least one between fr and to")
 
-		self.fr = parser.parse(fr) if isinstance(fr, str) else fr
-		self.to = parser.parse(to) if isinstance(to, str) else to
+        self.fr = parser.parse(fr) if isinstance(fr, str) else fr
+        self.to = parser.parse(to) if isinstance(to, str) else to
 
-		self.datestamp = None
-		self.timestamp = None 
-		self.datetime = None
+        self.datestamp = None
+        self.timestamp = None
+        self.datetime = None
 
+    def transform(self, s: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
+        if isinstance(s, pynmea2.types.DatetimeFix) or s.sentence_type == "ZDA":
+            self.datestamp = s.datestamp
 
-	def transform(self, s: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
-		if isinstance(s, pynmea2.types.DatetimeFix) or s.sentence_type == 'ZDA':
-			self.datestamp = s.datestamp
+        if isinstance(s, pynmea2.types.LatLonFix):
+            self.timestamp = s.timestamp
 
-		if isinstance(s, pynmea2.types.LatLonFix):
-			self.timestamp = s.timestamp
+        if self.datestamp and self.timestamp:
+            self.datetime = datetime.datetime.combine(self.datestamp, self.timestamp)
 
-		if self.datestamp and self.timestamp:
-			self.datetime = datetime.datetime.combine(self.datestamp, self.timestamp)
+        if self.datetime and self.to and self.datetime > self.to:
+            return []
 
-		if self.datetime and self.to and self.datetime > self.to:
-				return []
-		
-		if self.datetime and self.fr and self.datetime < self.fr:
-				return []
-		
-		return [s]
+        if self.datetime and self.fr and self.datetime < self.fr:
+            return []
+
+        return [s]

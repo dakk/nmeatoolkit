@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,25 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import pynmea2
-from .pipe import Pipe	
+
+from .pipe import Pipe
+
 
 class FilterPipe(Pipe):
-	"""  """
-	def __init__(self, exclude = None, include = None):
-		self.exclude = exclude
-		self.include = include
+    """ """
 
-	def transform(self, sentence: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
-		s = sentence.sentence_type
+    def __init__(self, exclude=None, include=None):
+        self.exclude = exclude
+        self.include = include
 
-		if self.exclude and s in self.exclude:
-			return []
-		if self.include and not (s in self.include):
-			return []
-		
-		return [sentence]
+    def transform(self, sentence: pynmea2.NMEASentence) -> list[pynmea2.NMEASentence]:
+        s = sentence.sentence_type
+
+        if self.exclude and s in self.exclude:
+            return []
+        if self.include and not (s in self.include):
+            return []
+
+        return [sentence]

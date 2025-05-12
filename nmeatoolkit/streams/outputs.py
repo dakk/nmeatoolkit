@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import sys
+
 
 class Output:
     def write(self, data):
@@ -34,12 +35,12 @@ class Output:
 
 
 class FileOutput(Output):
-    def __init__(self, filepath = '--'):
+    def __init__(self, filepath="--"):
         self.filepath = filepath
-        if self.filepath == '--':
+        if self.filepath == "--":
             self.file = sys.stdout
         else:
-            self.file = open(self.filepath, 'w')
+            self.file = open(self.filepath, "w")
 
     def write(self, data):
         self.file.write(data)

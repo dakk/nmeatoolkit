@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import math
+
 import pynmea2
+
 from .translator import ExtractorBaseTranslator, FileTranslator
+
 
 class PolarTranslator(FileTranslator, ExtractorBaseTranslator):
     def __init__(self):
@@ -33,7 +36,6 @@ class PolarTranslator(FileTranslator, ExtractorBaseTranslator):
         self.ttws = []
         self.ttwa = []
         self.speedTable = {}
-
 
     def feed(self, s: pynmea2.NMEASentence) -> None:
         if not s:
@@ -50,37 +52,36 @@ class PolarTranslator(FileTranslator, ExtractorBaseTranslator):
             if twa > 180:
                 twa = twa - 180
 
-            if speed == 0 or twa > 180. or tws > 45 or twa < 30:
+            if speed == 0 or twa > 180.0 or tws > 45 or twa < 30:
                 return
 
-            if not tws in self.ttws:
+            if tws not in self.ttws:
                 self.ttws.append(tws)
-            if not twa in self.ttwa:
+            if twa not in self.ttwa:
                 self.ttwa.append(twa)
 
-            if (tws,twa) in self.speedTable:
-                if self.speedTable[(tws,twa)] < speed:
-                    self.speedTable[(tws,twa)] = speed
+            if (tws, twa) in self.speedTable:
+                if self.speedTable[(tws, twa)] < speed:
+                    self.speedTable[(tws, twa)] = speed
             else:
-                self.speedTable[(tws, twa)] = speed 
-        
+                self.speedTable[(tws, twa)] = speed
 
     def result(self) -> str:
         self.ttws.sort()
         self.ttwa.sort()
 
-        s = 'TWA\TWS'
+        s = "TWA\\TWS"
         for x in self.ttws:
-            s += '\t%d' % x
-        s += '\n'
+            s += "\t%d" % x
+        s += "\n"
 
         for y in self.ttwa:
-            s += '%d' % y
+            s += "%d" % y
             for x in self.ttws:
                 if (x, y) in self.speedTable:
-                    s += '\t{:.1f}'.format(self.speedTable[(x, y)])
+                    s += "\t{:.1f}".format(self.speedTable[(x, y)])
                 else:
-                    s += '\t{:.1f}'.format(0)
-            s += '\n'
+                    s += "\t{:.1f}".format(0)
+            s += "\n"
 
         return s

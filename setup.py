@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,16 +22,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import setuptools
-
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-    
+
 setuptools.setup(
     name="nmeatoolkit",
-    version="0.1.8",
+    version="0.2",
     author="Davide Gessa",
     author_email="gessadavide@gmail.com",
     description="A comprensive software collection for nmea manipulation",
@@ -55,9 +54,9 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
         "Topic :: Software Development :: Libraries :: Python Modules",
-        "Topic :: Utilities"
+        "Topic :: Utilities",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     # requires=open('requirements.txt').read().splitlines(),
-	test_suite = 'tests'
+    test_suite="tests",
 )

@@ -1,0 +1,25 @@
+# Contributing
+
+## Prepare the env
+
+```
+pyenv virtualenv nmeatoolkit-env
+pip install tox
+```
+
+
+## Pre-commit checks
+
+```
+tox
+```
+
+
+
+## Publish
+
+```
+rm dist/*
+python setup.py sdist bdist_wheel
+python -m twine upload dist/*
+```

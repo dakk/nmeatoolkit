@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2021 Davide Gessa
-'''
+# Copyright (C) 2021 - 2025 Davide Gessa
+"""
 MIT License
 
-Copyright (c) 2021 Davide Gessa
+Copyright (c) 2021 - 2025 Davide Gessa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,39 +22,35 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+"""
 import argparse
 
 from nmeatoolkit.pipeline import Pipeline
 from nmeatoolkit.pipes.crop import CropPipe
 from nmeatoolkit.pipes.filter import FilterPipe
 
-from .streams.inputs import FileInput
-from .streams.outputs import FileOutput
-from .translators.tostring import ToStringTranslator
-from .translators.gpx import GPXTranslator
-from .translators.polar import PolarTranslator
 from .pipes.seatalk import SeatalkPipe
 from .pipes.truewind import TrueWindPipe
+from .streams.inputs import FileInput
+from .streams.outputs import FileOutput
+from .translators.gpx import GPXTranslator
+from .translators.polar import PolarTranslator
+from .translators.tostring import ToStringTranslator
 
-def getDefaultParser():
+
+def get_default_parser():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "-i",
-        "--input",
-        help="Input file",
-        required=False,
-        type=str,
-        default='--'
+        "-i", "--input", help="Input file", required=False, type=str, default="--"
     )
-    
+
     parser.add_argument(
         "-o",
         "--output",
         help="Output file",
         required=False,
-        default='--',
+        default="--",
         type=str,
     )
 
@@ -68,76 +64,69 @@ def getDefaultParser():
     )
 
     parser.add_argument(
-        "-p",
-        "--pipes",
-        help="Pipes",
-        required=False,
-        type=str,
-        default=None
+        "-p", "--pipes", help="Pipes", required=False, type=str, default=None
     )
 
     return parser
 
-def processArguments(args):
-    input = None 
-    output = None 
+
+def process_arguments(args):  # noqa: C901
+    input = None
+    output = None
     translator = None
     pipes = []
 
-    if args.input == '--' or args.input == None:
+    if args.input == "--" or args.input is None:
         input = FileInput()
-    elif args.input.startswith('tcp://'):
-        raise Exception('Not implemented')
-    elif args.input.startswith('udp://'):
-        raise Exception('Not implemented')
+    elif args.input.startswith("tcp://"):
+        raise Exception("Not implemented")
+    elif args.input.startswith("udp://"):
+        raise Exception("Not implemented")
     else:
         input = FileInput(args.input)
 
-    
-    if args.output == '--' or args.output == None:
+    if args.output == "--" or args.output is None:
         output = FileOutput()
-    elif args.output.startswith('tcp://'):
-        raise Exception('Not implemented')
-    elif args.output.startswith('udp://'):
-        raise Exception('Not implemented')
+    elif args.output.startswith("tcp://"):
+        raise Exception("Not implemented")
+    elif args.output.startswith("udp://"):
+        raise Exception("Not implemented")
     else:
         output = FileOutput(args.output)
 
-
-    if args.format == 'nmea':
+    if args.format == "nmea":
         translator = ToStringTranslator()
-    elif args.format == 'pol':
+    elif args.format == "pol":
         translator = PolarTranslator()
-    elif args.format == 'gpx':
+    elif args.format == "gpx":
         translator = GPXTranslator(extensions=False)
-    elif args.format == 'gpx-full':
+    elif args.format == "gpx-full":
         translator = GPXTranslator(extensions=True)
 
     if args.pipes:
-        for p in args.pipes.split(','):
-            pargs = p.split('[')
+        for p in args.pipes.split(","):
+            pargs = p.split("[")
             ppipe = pargs[0]
             if len(pargs) == 2:
-                pargs = pargs[2].split(']')
+                pargs = pargs[2].split("]")
                 try:
-                    pargs = dict(list(map(lambda x: x.split('='), pargs)))
+                    pargs = dict(list(map(lambda x: x.split("="), pargs)))
                 except:
                     pargs = {}
             else:
                 pargs = {}
 
-
-            if ppipe == 'crop':
-                fr = pargs['from'] if 'from' in pargs else None
-                to = pargs['to'] if 'to' in pargs else None
+            if ppipe == "crop":
+                fr = pargs["from"] if "from" in pargs else None
+                to = pargs["to"] if "to" in pargs else None
                 pipes.append(CropPipe(fr, to))
-            elif ppipe == 'filter':
-                exclude = pargs['exclude'] if 'exclude' in pargs else None
-                include = pargs['include'] if 'include' in pargs else None
+            elif ppipe == "filter":
+                exclude = pargs["exclude"] if "exclude" in pargs else None
+                include = pargs["include"] if "include" in pargs else None
                 pipes.append(FilterPipe(exclude, include))
-            elif ppipe == 'seatalk':
+            elif ppipe == "seatalk":
                 pipes.append(SeatalkPipe())
-            elif ppipe == 'truewind':
+            elif ppipe == "truewind":
                 pipes.append(TrueWindPipe())
 
     return Pipeline(input, output, translator, pipes)

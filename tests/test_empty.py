@@ -23,9 +23,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from .gpx import *  # noqa: F403, F401
-from .identity import *  # noqa: F403, F401
-from .polar import *  # noqa: F403, F401
-from .tostring import *  # noqa: F403, F401
-from .trackpoint import *  # noqa: F403, F401
-from .translator import *  # noqa: F403, F401
+import unittest
+
+
+class TestEmptyUtils(unittest.TestCase):
+    def test_true(self):
+        self.assertTrue(True)
